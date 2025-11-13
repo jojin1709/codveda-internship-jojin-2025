@@ -17,7 +17,7 @@ Netlify (Frontend Hosting)
 🚀 Live Demo
 
 🔗 Frontend (Netlify):
-👉 https://your-netlify-url.netlify.app
+👉 https://jojin-codveda-project-ui.netlify.app/
 
 🔗 Backend (Render):
 👉 https://codveda-internship-jojin-2025.onrender.com/api/users
@@ -101,4 +101,5 @@ Full Stack Developer
 GitHub: https://github.com/jojin1709
 
 Portfolio: https://jojin-portfolio.netlify.app
+
 
