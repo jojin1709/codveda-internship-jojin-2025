@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>All Users</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="create.html">Create</a>
+      <a href="get-users.html">Get Users</a>
+      <a href="update-user.html">Update</a>
+      <a href="delete-user.html">Delete</a>
+    </div>
+    <button class="toggle-btn" id="themeToggle">🌙</button>
+  </div>
+
+  <div class="container">
+    <h1>All Users</h1>
+
+    <div class="controls">
+      <div class="search">
+        <input id="q" placeholder="Search by name or email..." />
+      </div>
+      <button class="btn" id="loadBtn">Load users</button>
+      <button class="btn secondary" id="refreshBtn">Refresh</button>
+    </div>
+
+    <div id="grid" class="grid"></div>
+
+    <div class="pager" id="pager"></div>
+  </div>
+
+  <!-- Edit modal -->
+  <div id="modalRoot" style="display:none"></div>
+
+<script>
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
+
+let page = 1;
+const limit = 6;
+
+const qInput = document.getElementById("q");
+const loadBtn = document.getElementById("loadBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const grid = document.getElementById("grid");
+const pager = document.getElementById("pager");
+const modalRoot = document.getElementById("modalRoot");
+
+loadBtn.addEventListener("click", () => { page = 1; fetchUsers(); });
+refreshBtn.addEventListener("click", () => fetchUsers());
+qInput.addEventListener("keyup", (e) => { if (e.key === "Enter") { page = 1; fetchUsers(); } });
+
+// Fetch users
+async function fetchUsers() {
+  const q = encodeURIComponent(qInput.value.trim());
+  const url = `http://localhost:5000/api/users?q=${q}&page=${page}&limit=${limit}`;
+  grid.innerHTML = "Loading...";
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    renderUsers(data.users || []);
+    renderPager(data.count || 0, data.page || 1, data.limit || limit);
+  } catch (err) {
+    grid.innerHTML = "<p style='color:#c00'>Error loading users</p>";
+    console.error(err);
+  }
+}
+
+// Render user cards
+function renderUsers(users) {
+  grid.innerHTML = "";
+  if (!users.length) {
+    grid.innerHTML = "<p style='color:var(--muted)'>No users yet</p>";
+    return;
+  }
+
+  users.forEach((u, idx) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    // avatar using initials
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = initials(u.name);
+
+    const body = document.createElement("div");
+    body.className = "card-body";
+    const title = document.createElement("h3");
+    title.textContent = u.name;
+    const sub = document.createElement("p");
+    sub.textContent = u.email;
+
+    body.appendChild(title);
+    body.appendChild(sub);
+
+    const actions = document.createElement("div");
+    actions.className = "card-actions";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "icon-btn";
+    editBtn.title = "Edit";
+    editBtn.innerHTML = "✏️";
+    editBtn.onclick = () => openEditModal(u);
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "icon-btn";
+    delBtn.title = "Delete";
+    delBtn.innerHTML = "🗑️";
+    delBtn.onclick = () => confirmDelete(u._id);
+
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+
+    card.appendChild(avatar);
+    card.appendChild(body);
+    card.appendChild(actions);
+
+    grid.appendChild(card);
+
+    // staggered fade-in
+    setTimeout(()=>card.classList.add("visible"), 50 * idx);
+  });
+}
+
+// initials helper
+function initials(name){
+  if(!name) return "?";
+  const parts = name.trim().split(" ").filter(p=>p);
+  if(parts.length===1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+}
+
+// pagination
+function renderPager(total, current, perPage){
+  pager.innerHTML = "";
+  const pages = Math.max(1, Math.ceil(total / perPage));
+  // prev
+  const prev = document.createElement("button");
+  prev.className = "page-btn";
+  prev.textContent = "Prev";
+  prev.disabled = current <= 1;
+  prev.onclick = () => { page = Math.max(1, current-1); fetchUsers(); };
+  pager.appendChild(prev);
+
+  // numbers (show few)
+  const start = Math.max(1, current - 2);
+  const end = Math.min(pages, current + 2);
+  for(let i=start;i<=end;i++){
+    const b = document.createElement("button");
+    b.className = "page-btn";
+    b.textContent = i;
+    b.style.fontWeight = i===current ? "700" : "500";
+    b.onclick = ()=>{ page = i; fetchUsers(); };
+    pager.appendChild(b);
+  }
+
+  // next
+  const next = document.createElement("button");
+  next.className = "page-btn";
+  next.textContent = "Next";
+  next.disabled = current >= pages;
+  next.onclick = () => { page = Math.min(pages, current+1); fetchUsers(); };
+  pager.appendChild(next);
+}
+
+// Edit modal
+function openEditModal(user){
+  modalRoot.style.display = "block";
+  modalRoot.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3>Edit user</h3>
+        <input id="mname" class="input" value="${escapeHtml(user.name)}" />
+        <input id="memail" class="input" value="${escapeHtml(user.email)}" />
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button id="cancelBtn" class="btn secondary">Cancel</button>
+          <button id="saveBtn" class="btn">Save</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("cancelBtn").onclick = ()=>{ modalRoot.style.display = "none"; modalRoot.innerHTML=""; };
+  document.getElementById("saveBtn").onclick = async () => {
+    const name = document.getElementById("mname").value.trim();
+    const email = document.getElementById("memail").value.trim();
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${user._id}`, {
+        method: "PUT",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({name,email})
+      });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.error || "Update failed");
+      modalRoot.style.display = "none"; modalRoot.innerHTML="";
+      fetchUsers();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+}
+
+async function confirmDelete(id){
+  if(!confirm("Delete this user?")) return;
+  try {
+    const res = await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "Delete failed");
+    fetchUsers();
+  } catch (err){
+    alert(err.message);
+  }
+}
+
+function escapeHtml(s){ return (s+"").replace(/[&<>"]/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+
+// initial load
+fetchUsers();
+</script>
+</body>
+</html>

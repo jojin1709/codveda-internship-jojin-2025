@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Create User</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="create.html">Create</a>
+      <a href="get-users.html">Get Users</a>
+      <a href="update-user.html">Update</a>
+      <a href="delete-user.html">Delete</a>
+    </div>
+    <button class="toggle-btn" id="themeToggle">🌙</button>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="container" style="max-width: 640px;">
+    <h1>Create User</h1>
+
+    <div style="padding: 6px 24px">
+      <input id="name" class="input" placeholder="Full name" />
+      <input id="email" class="input" placeholder="Email address" />
+      <button class="btn" id="createBtn">Create user</button>
+
+      <!-- NEW FEEDBACK CARD -->
+      <div id="feedbackCard" class="feedback-card" style="display:none;">
+        <button class="close-btn" id="closeFeedback">×</button>
+        <pre id="feedbackText" style="white-space:pre-wrap;margin-top:8px;"></pre>
+      </div>
+    </div>
+  </div>
+
+<script>
+// THEME SWITCH
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
+
+// ELEMENTS
+const createBtn = document.getElementById("createBtn");
+const card = document.getElementById("feedbackCard");
+const cardText = document.getElementById("feedbackText");
+const closeBtn = document.getElementById("closeFeedback");
+
+function showCard(message, isError = false) {
+  card.classList.remove("error", "fade-out");
+  card.style.display = "block";
+  void card.offsetWidth; // restart animation
+
+  if (isError) card.classList.add("error");
+  cardText.textContent = message;
+
+  card.classList.add("show");
+
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    card.classList.add("fade-out");
+    setTimeout(() => (card.style.display = "none"), 300);
+  }, 3000);
+}
+
+// Close button
+closeBtn.addEventListener("click", () => {
+  card.classList.add("fade-out");
+  setTimeout(() => (card.style.display = "none"), 300);
+});
+
+// CREATE USER
+createBtn.addEventListener("click", async () => {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  if (!name || !email) {
+    return showCard("Please enter name and email.", true);
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({name, email})
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) return showCard(data.error || "Something went wrong.", true);
+
+    showCard("User created successfully!");
+
+    // Clear inputs
+    document.getElementById("name").value = "";
+    document.getElementById("email").value = "";
+
+  } catch (err) {
+    showCard("Server error: " + err.message, true);
+  }
+});
+</script>
+
+</body>
+</html>

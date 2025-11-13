@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Update User</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="create.html">Create</a>
+      <a href="get-users.html">Get Users</a>
+      <a href="update-user.html">Update</a>
+      <a href="delete-user.html">Delete</a>
+    </div>
+    <button class="toggle-btn" id="themeToggle">🌙</button>
+  </div>
+
+  <div class="container" style="max-width:640px">
+    <h1>Update User (by ID)</h1>
+    <div style="padding:6px 24px">
+      <input id="id" class="input" placeholder="User ID" />
+      <input id="name" class="input" placeholder="New name" />
+      <input id="email" class="input" placeholder="New email" />
+      <button class="btn" id="updateBtn">Update user</button>
+      <div id="feedback" style="margin-top:14px;font-family:monospace;display:none;padding:12px;border-radius:8px"></div>
+    </div>
+  </div>
+
+<script>
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
+
+document.getElementById("updateBtn").addEventListener("click", async () => {
+  const id = document.getElementById("id").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const feedback = document.getElementById("feedback");
+  feedback.style.display = "none";
+  if(!id){ feedback.style.display="block"; feedback.textContent="Provide user id"; return; }
+  try{
+    const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({name,email})
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || "Error");
+    feedback.style.display="block"; feedback.textContent = JSON.stringify(data, null, 2);
+  }catch(err){
+    feedback.style.display="block"; feedback.textContent = err.message;
+  }
+});
+</script>
+</body>
+</html>
