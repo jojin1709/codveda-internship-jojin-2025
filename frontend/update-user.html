@@ -29,30 +29,48 @@
   </div>
 
 <script>
+const API = "https://codveda-internship-jojin-2025.onrender.com/api/users";
+
+// Theme toggle
 const themeToggle = document.getElementById("themeToggle");
 themeToggle.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
 });
 
+// Update user action
 document.getElementById("updateBtn").addEventListener("click", async () => {
   const id = document.getElementById("id").value.trim();
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const feedback = document.getElementById("feedback");
+
   feedback.style.display = "none";
-  if(!id){ feedback.style.display="block"; feedback.textContent="Provide user id"; return; }
-  try{
-    const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+
+  if(!id){ 
+    feedback.style.display="block"; 
+    feedback.textContent="Provide user id"; 
+    return; 
+  }
+
+  try {
+    const res = await fetch(`${API}/${id}`, {
       method: "PUT",
       headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({name,email})
+      body: JSON.stringify({name, email})
     });
+
     const data = await res.json();
-    if(!res.ok) throw new Error(data.error || "Error");
-    feedback.style.display="block"; feedback.textContent = JSON.stringify(data, null, 2);
-  }catch(err){
-    feedback.style.display="block"; feedback.textContent = err.message;
+    if(!res.ok) throw new Error(data.error || "Error updating user");
+
+    feedback.style.display="block"; 
+    feedback.style.background = "linear-gradient(90deg,#e6fffb,#f0fff7)";
+    feedback.textContent = JSON.stringify(data, null, 2);
+
+  } catch(err) {
+    feedback.style.display="block"; 
+    feedback.style.background = "#ffdede";
+    feedback.textContent = err.message;
   }
 });
 </script>

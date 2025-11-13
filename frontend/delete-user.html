@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- Navbar -->
   <div class="navbar">
     <div class="nav-links">
       <a href="index.html">Home</a>
@@ -17,36 +19,79 @@
     <button class="toggle-btn" id="themeToggle">🌙</button>
   </div>
 
+  <!-- Main Box -->
   <div class="container" style="max-width:640px">
-    <h1>Delete User (by ID)</h1>
+    <h1>Delete User</h1>
+
     <div style="padding:6px 24px">
       <input id="id" class="input" placeholder="User ID" />
       <button class="btn" id="deleteBtn">Delete user</button>
-      <div id="feedback" style="margin-top:14px;font-family:monospace;display:none;padding:12px;border-radius:8px"></div>
+
+      <!-- Feedback message -->
+      <div id="feedback"
+        style="margin-top:14px;font-family:monospace;display:none;padding:12px;border-radius:8px">
+      </div>
     </div>
   </div>
 
 <script>
+const API = "https://codveda-internship-jojin-2025.onrender.com/api/users";
+
+// Theme toggle
 const themeToggle = document.getElementById("themeToggle");
 themeToggle.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
 });
 
+// Delete user
 document.getElementById("deleteBtn").addEventListener("click", async () => {
   const id = document.getElementById("id").value.trim();
   const feedback = document.getElementById("feedback");
-  if(!id){ feedback.style.display="block"; feedback.textContent="Provide user id"; return; }
-  if(!confirm("Delete this user?")) return;
-  try{
-    const res = await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
+
+  feedback.style.display = "none";
+
+  if (!id) {
+    showMessage("Please provide user ID", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/${id}`, { method: "DELETE" });
     const data = await res.json();
-    if(!res.ok) throw new Error(data.error || "Error deleting");
-    feedback.style.display="block"; feedback.textContent = JSON.stringify(data, null,2);
-  }catch(err){
-    feedback.style.display="block"; feedback.textContent = err.message;
+
+    if (!res.ok) throw new Error(data.error || "Delete failed");
+
+    showMessage("User deleted successfully ✔️", "success");
+
+    document.getElementById("id").value = "";
+
+  } catch (err) {
+    showMessage(err.message, "error");
   }
 });
+
+// Beautiful popup message
+function showMessage(msg, type) {
+  const box = document.getElementById("feedback");
+  box.style.display = "block";
+
+  if (type === "success") {
+    box.style.background = "linear-gradient(90deg,#e6fffb,#f0fff7)";
+    box.style.color = "#0a5b35";
+  } else {
+    box.style.background = "#ffdede";
+    box.style.color = "#a30000";
+  }
+
+  box.textContent = msg;
+
+  // Auto hide after 3 seconds
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3000);
+}
 </script>
+
 </body>
 </html>

@@ -33,10 +33,11 @@
     <div class="pager" id="pager"></div>
   </div>
 
-  <!-- Edit modal -->
   <div id="modalRoot" style="display:none"></div>
 
 <script>
+const API = "https://codveda-internship-jojin-2025.onrender.com/api/users";
+
 const themeToggle = document.getElementById("themeToggle");
 themeToggle.addEventListener("click", () => {
   document.body.classList.toggle("dark");
@@ -60,8 +61,10 @@ qInput.addEventListener("keyup", (e) => { if (e.key === "Enter") { page = 1; fet
 // Fetch users
 async function fetchUsers() {
   const q = encodeURIComponent(qInput.value.trim());
-  const url = `http://localhost:5000/api/users?q=${q}&page=${page}&limit=${limit}`;
+  const url = `${API}?q=${q}&page=${page}&limit=${limit}`;
+
   grid.innerHTML = "Loading...";
+
   try {
     const res = await fetch(url);
     const data = await res.json();
@@ -85,7 +88,6 @@ function renderUsers(users) {
     const card = document.createElement("div");
     card.className = "card";
 
-    // avatar using initials
     const avatar = document.createElement("div");
     avatar.className = "avatar";
     avatar.textContent = initials(u.name);
@@ -124,7 +126,6 @@ function renderUsers(users) {
 
     grid.appendChild(card);
 
-    // staggered fade-in
     setTimeout(()=>card.classList.add("visible"), 50 * idx);
   });
 }
@@ -137,11 +138,11 @@ function initials(name){
   return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
 }
 
-// pagination
+// Pagination
 function renderPager(total, current, perPage){
   pager.innerHTML = "";
   const pages = Math.max(1, Math.ceil(total / perPage));
-  // prev
+
   const prev = document.createElement("button");
   prev.className = "page-btn";
   prev.textContent = "Prev";
@@ -149,9 +150,9 @@ function renderPager(total, current, perPage){
   prev.onclick = () => { page = Math.max(1, current-1); fetchUsers(); };
   pager.appendChild(prev);
 
-  // numbers (show few)
   const start = Math.max(1, current - 2);
   const end = Math.min(pages, current + 2);
+
   for(let i=start;i<=end;i++){
     const b = document.createElement("button");
     b.className = "page-btn";
@@ -161,7 +162,6 @@ function renderPager(total, current, perPage){
     pager.appendChild(b);
   }
 
-  // next
   const next = document.createElement("button");
   next.className = "page-btn";
   next.textContent = "Next";
@@ -192,14 +192,15 @@ function openEditModal(user){
     const name = document.getElementById("mname").value.trim();
     const email = document.getElementById("memail").value.trim();
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user._id}`, {
+      const res = await fetch(`${API}/${user._id}`, {
         method: "PUT",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({name,email})
       });
       const data = await res.json();
       if(!res.ok) throw new Error(data.error || "Update failed");
-      modalRoot.style.display = "none"; modalRoot.innerHTML="";
+      modalRoot.style.display = "none"; 
+      modalRoot.innerHTML="";
       fetchUsers();
     } catch (err) {
       alert(err.message);
@@ -210,7 +211,7 @@ function openEditModal(user){
 async function confirmDelete(id){
   if(!confirm("Delete this user?")) return;
   try {
-    const res = await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
+    const res = await fetch(`${API}/${id}`, { method: "DELETE" });
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || "Delete failed");
     fetchUsers();
@@ -219,9 +220,10 @@ async function confirmDelete(id){
   }
 }
 
-function escapeHtml(s){ return (s+"").replace(/[&<>"]/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+function escapeHtml(s){ 
+  return (s+"").replace(/[&<>"]/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); 
+}
 
-// initial load
 fetchUsers();
 </script>
 </body>
