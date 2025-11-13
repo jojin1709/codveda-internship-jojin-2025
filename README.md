@@ -1,105 +1,71 @@
-﻿# Codveda Internship - Jojin John
+# 🖥️ Codveda Internship – Full Stack CRUD Application  
+**Author: Jojin John**
 
-🖥️ Full Stack CRUD Application
+A modern and responsive **CRUD (Create, Read, Update, Delete)** web application built as part of my internship project.  
+The app includes a full backend API, cloud database, and a beautiful interactive frontend UI.
 
-A modern and responsive CRUD (Create, Read, Update, Delete) application built using:
+---
 
-Node.js + Express (Backend)
+## 🚀 Live Demo
 
-MongoDB Atlas (Database)
-
-HTML, CSS, JavaScript (Frontend)
-
-Render (Backend Hosting)
-
-Netlify (Frontend Hosting)
-
-🚀 Live Demo
-
-🔗 Frontend (Netlify):
+🔗 **Frontend (Netlify):**  
 👉 https://jojin-codveda-project-ui.netlify.app/
 
-🔗 Backend (Render):
+🔗 **Backend API (Render):**  
 👉 https://codveda-internship-jojin-2025.onrender.com/api/users
 
-📌 Features
-✅ Users Module
+---
 
-Create new users
+## 📌 Features
 
-View all users
+### ✅ Users Module
+- Create new users  
+- View all users in card layout  
+- Edit & update users  
+- Delete users  
+- Search users  
+- Pagination support  
+- Dark / Light mode toggle  
+- Smooth animations  
+- Fully responsive UI  
+- Clean and modern “glass-effect” design
 
-Update users
+---
 
-Delete users
+## 🛠️ Tech Stack
 
-Search users
+### **Frontend**
+- HTML5  
+- CSS3 (Glass UI, responsive design)  
+- JavaScript (Fetch API)
 
-Pagination
+### **Backend**
+- Node.js  
+- Express.js  
+- Mongoose  
 
-Real-time UI updates
+### **Database**
+- MongoDB Atlas (Cloud)
 
-Smooth animations & modern cards UI
+### **Deployment**
+- **Render** → Backend  
+- **Netlify** → Frontend  
 
-Dark / Light mode toggle
+---
 
-🛠️ Tech Stack
-Frontend
+## ⚙️ Installation (Local Setup)
 
-HTML5
+### **1️⃣ Clone the repository**
+```bash
+git clone https://github.com/jojin1709/codveda-internship-project.git
+cd codveda-internship-project
 
-CSS3 (Modern glass UI)
-
-Vanilla JavaScript (Fetch API)
-
-Backend
-
-Node.js
-
-Express.js
-
-Mongoose
-
-Database
-
-MongoDB Atlas (Cloud)
-
-Deployment
-
-Render (Backend)
-
-Netlify (Frontend)
-
-
-⚙️ Installation (Local Setup)
-1️⃣ Clone repository
-
-    git clone https://github.com/jojin1709/codveda-internship-project.git
-    cd project
-    
-2️⃣ Install backend packages
-
-       cd backend
-     npm install
-
-3️⃣ Add .env file
-
-    MONGO_URI=your_atlas_connection_string
-    PORT=5000
-    
-4️⃣   Run backend
-
-     npm start
-     
-5️⃣ Open frontend → run with Live Server (VS Code)
 
 
 👨‍💻 Author
+ Jojin John
+ Full Stack Developer
 
-Jojin John
-Full Stack Developer
-GitHub: https://github.com/jojin1709
+🔗 GitHub: https://github.com/jojin1709
 
-Portfolio: https://jojin-portfolio.netlify.app
-
-
+🔗 Portfolio: https://jojin-portfolio.netlify.app
