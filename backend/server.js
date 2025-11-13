@@ -10,8 +10,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 👇 Add this — root route to stop "Cannot GET /"
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully!");
+});
+
 // MongoDB connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/codveda_db";
+
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("MongoDB connected"))
