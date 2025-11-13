@@ -70,26 +70,6 @@ Render (Backend)
 
 Netlify (Frontend)
 
-📂 Project Structure
-
-project/
-│
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── server.js
-│   ├── .env
-│
-├── frontend/
-│   ├── index.html
-│   ├── create.html
-│   ├── get-users.html
-│   ├── update-user.html
-│   ├── delete-user.html
-│   ├── style.css
-│
-└── README.md
 
 ⚙️ Installation (Local Setup)
 1️⃣ Clone repository
@@ -112,3 +92,13 @@ project/
      npm start
      
 5️⃣ Open frontend → run with Live Server (VS Code)
+
+
+👨‍💻 Author
+
+Jojin John
+Full Stack Developer
+GitHub: https://github.com/jojin1709
+
+Portfolio: https://jojin-portfolio.netlify.app
+
